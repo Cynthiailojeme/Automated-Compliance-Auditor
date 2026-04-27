@@ -17,7 +17,7 @@ Capstone Project for SCA DevOps (Group 3)
 #   2. JSON report      — machine-readable, stored in reports/
 #   3. Text report      — human-readable, stored in reports/
 #   4. Prometheus file  — metrics scraped by node-exporter for Grafana dashboard
-#
+#.   ## Checked the following metrics for prometheus: compliance_score_percent, compliant_checks, failed_checks, compliance_checks_total
 # USAGE:
 #   ./audit.sh
 #   TRUSTED_REGISTRIES="ghcr.io/myorg" DISK_THRESHOLD=75 ./audit.sh

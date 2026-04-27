@@ -1,0 +1,29 @@
+COMPLIANCE AUDIT REPORT
+========================
+Timestamp : Mon Apr 27 19:15:35 UTC 2026
+Host      : dd513b983f53
+Score     : 46% (7/15)
+
+[FAIL] C01: No containers running as root
+       Detail: Running as root: auditor
+[FAIL] C02: All containers have health checks
+       Detail: Missing healthcheck: auditor prometheus node-exporter
+[FAIL] C03: No unexpected exposed ports
+       Detail: Unexpected ports: prometheus:9090/tcp node-exporter:9100/tcp
+[FAIL] C04: All images from trusted registries
+       Detail: Untrusted images: auditor (automated-compliance-auditor_auditor) prometheus (prom/prometheus:latest) node-exporter (prom/node-exporter:latest)
+[PASS] C05: No secrets in plain text env vars
+[PASS] C06: Disk usage below 80%
+[FAIL] C07: All containers have CPU limits
+       Detail: No CPU limit: auditor prometheus node-exporter
+[FAIL] C08: All containers have memory limits
+       Detail: No memory limit: auditor prometheus node-exporter
+[PASS] C09: No privileged containers
+[FAIL] C10: Containers use read-only root filesystem
+       Detail: Writable root fs: auditor prometheus node-exporter
+[PASS] C11: No containers using host network mode
+[PASS] C12: Docker daemon not exposed on TCP 2375
+[PASS] C13: No containers sharing host PID namespace
+[PASS] C14: No images older than 90 days
+[FAIL] C15: Docker Content Trust is enabled
+       Detail: DOCKER_CONTENT_TRUST is not set to 1

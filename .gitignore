@@ -1,0 +1,10 @@
+# Audit output artifacts — regenerated on every run, no need to track.
+
+# Local scratch and temp files.
+*.log
+.DS_Store
+
+# Editor/OS noise.
+.vscode/
+.idea/
+*.swp

@@ -1,0 +1,19 @@
+# HELP compliance_checks_total Total number of compliance checks run
+# TYPE compliance_checks_total gauge
+compliance_checks_total 15
+
+# HELP compliant_checks Number of checks that passed
+# TYPE compliant_checks gauge
+compliant_checks 7
+
+# HELP failed_checks Number of checks that failed
+# TYPE failed_checks gauge
+failed_checks 8
+
+# HELP compliance_score_percent Compliance score as a percentage
+# TYPE compliance_score_percent gauge
+compliance_score_percent 46
+
+# HELP last_audit_timestamp Unix timestamp of the last completed audit
+# TYPE last_audit_timestamp gauge
+last_audit_timestamp 1777317337
