@@ -16,4 +16,4 @@ compliance_score_percent 46
 
 # HELP last_audit_timestamp Unix timestamp of the last completed audit
 # TYPE last_audit_timestamp gauge
-last_audit_timestamp 1777337718
+last_audit_timestamp 1777337904
