@@ -1,0 +1,273 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "id": 1,
+      "type": "gauge",
+      "title": "Compliance score",
+      "description": "Overall percentage of checks passing this audit run",
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 0 },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 50 },
+              { "color": "yellow", "value": 70 },
+              { "color": "green", "value": 90 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        }
+      },
+      "targets": [
+        {
+          "expr": "compliance_score_percent",
+          "legendFormat": "Score",
+          "refId": "A"
+        }
+      ],
+      "datasource": { "type": "prometheus", "uid" : "PBFA97CFB590B2093" }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Checks passed",
+      "gridPos": { "h": 4, "w": 4, "x": 6, "y": 0 },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "auto",
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        }
+      },
+      "targets": [
+        {
+          "expr": "compliant_checks",
+          "legendFormat": "Passed",
+          "refId": "A"
+        }
+      ],
+      "datasource": { "type": "prometheus", "uid" : "PBFA97CFB590B2093" }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Checks failed",
+      "gridPos": { "h": 4, "w": 4, "x": 10, "y": 0 },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "auto",
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        }
+      },
+      "targets": [
+        {
+          "expr": "failed_checks",
+          "legendFormat": "Failed",
+          "refId": "A"
+        }
+      ],
+      "datasource": { "type": "prometheus", "uid" : "PBFA97CFB590B2093" }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Total checks",
+      "gridPos": { "h": 4, "w": 4, "x": 14, "y": 0 },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "auto",
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{ "color": "blue", "value": null }]
+          },
+          "color": { "mode": "thresholds" }
+        }
+      },
+      "targets": [
+        {
+          "expr": "compliance_checks_total",
+          "legendFormat": "Total",
+          "refId": "A"
+        }
+      ],
+      "datasource": { "type": "prometheus", "uid" : "PBFA97CFB590B2093" }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Last audit",
+      "description": "Time of the most recent completed audit run",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 4 },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "auto",
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dateTimeAsLocal",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{ "color": "text", "value": null }]
+          },
+          "color": { "mode": "thresholds" }
+        }
+      },
+      "targets": [
+        {
+          "expr": "last_audit_timestamp * 1000",
+          "legendFormat": "Last audit",
+          "refId": "A"
+        }
+      ],
+      "datasource": { "type": "prometheus", "uid" : "PBFA97CFB590B2093" }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Compliance score over time",
+      "description": "How the compliance percentage has trended across audit runs",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "options": {
+        "tooltip": { "mode": "single" },
+        "legend": { "displayMode": "list", "placement": "bottom" }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 80 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "compliance_score_percent",
+          "legendFormat": "Compliance %",
+          "refId": "A"
+        }
+      ],
+      "datasource": { "type": "prometheus", "uid" : "PBFA97CFB590B2093" }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Passed vs failed checks over time",
+      "description": "Breakdown of individual check results across every audit run",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "list", "placement": "bottom" }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": false
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Passed" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Failed" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }]
+          }
+        ]
+      },
+      "targets": [
+        {
+          "expr": "compliant_checks",
+          "legendFormat": "Passed",
+          "refId": "A"
+        },
+        {
+          "expr": "failed_checks",
+          "legendFormat": "Failed",
+          "refId": "B"
+        }
+      ],
+      "datasource": { "type": "prometheus", "uid" : "PBFA97CFB590B2093" }
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 38,
+  "tags": ["compliance", "docker", "security"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Docker Compliance Dashboard",
+  "uid": "docker-compliance",
+  "version": 1
+}

@@ -1,0 +1,10 @@
+{
+  "timestamp": "20260428T005720Z",
+  "epoch": 1777337842,
+  "host": "c8a808e5a452",
+  "score_percent": 46,
+  "total": 15,
+  "passed": 7,
+  "failed": 8,
+  "checks": [{"id":"C01","name":"No containers running as root","status":"FAIL","detail":"Running as root: auditor"},{"id":"C02","name":"All containers have health checks","status":"FAIL","detail":"Missing healthcheck: grafana prometheus node-exporter auditor"},{"id":"C03","name":"No unexpected exposed ports","status":"FAIL","detail":"Unexpected ports: grafana:3000/tcp prometheus:9090/tcp node-exporter:9100/tcp"},{"id":"C04","name":"All images from trusted registries","status":"FAIL","detail":"Untrusted images: grafana (grafana/grafana:latest) prometheus (prom/prometheus:latest) node-exporter (prom/node-exporter:latest) auditor (automated-compliance-auditor-auditor)"},{"id":"C05","name":"No secrets in plain text env vars","status":"PASS","detail":""},{"id":"C06","name":"Disk usage below 80%","status":"PASS","detail":""},{"id":"C07","name":"All containers have CPU limits","status":"FAIL","detail":"No CPU limit: grafana prometheus node-exporter auditor"},{"id":"C08","name":"All containers have memory limits","status":"FAIL","detail":"No memory limit: grafana prometheus node-exporter auditor"},{"id":"C09","name":"No privileged containers","status":"PASS","detail":""},{"id":"C10","name":"Containers use read-only root filesystem","status":"FAIL","detail":"Writable root fs: grafana prometheus node-exporter auditor"},{"id":"C11","name":"No containers using host network mode","status":"PASS","detail":""},{"id":"C12","name":"Docker daemon not exposed on TCP 2375","status":"PASS","detail":""},{"id":"C13","name":"No containers sharing host PID namespace","status":"PASS","detail":""},{"id":"C14","name":"No images older than 90 days","status":"PASS","detail":""},{"id":"C15","name":"Docker Content Trust is enabled","status":"FAIL","detail":"DOCKER_CONTENT_TRUST is not set to 1"}]
+}
