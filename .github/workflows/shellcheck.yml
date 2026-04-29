@@ -13,4 +13,4 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run ShellCheck
-              run: shellcheck test2.sh
+              run: shellcheck scripts/audit.sh
