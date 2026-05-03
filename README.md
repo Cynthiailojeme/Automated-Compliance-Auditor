@@ -35,6 +35,7 @@ Automated-Compliance-Auditor/
 │       │   └── prometheus.yml    # Auto-connects Grafana to Prometheus
 │       └── dashboards/
 │           └── dashboards.yml    # Auto-loads dashboard JSON on startup
+├── images/                       # Screenshots of different work progress
 ├── metrics/
 │   └── compliance.prom           # Prometheus textfile metrics (runtime generated)
 ├── reports/                      # Audit reports (runtime generated, hourly)
