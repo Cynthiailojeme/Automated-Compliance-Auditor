@@ -8,3 +8,6 @@
 .vscode/
 .idea/
 *.swp
+
+# # Audit reports - generated at runtime, do not commit
+reports/

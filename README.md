@@ -1,8 +1,10 @@
 # Automated Compliance Auditor
 
-Capstone Project — SCA DevOps Group 3
+Capstone Project - SCA DevOps Group 3
 
-A tool that audits running Docker infrastructure against a security and compliance checklist, generates reports, and tracks compliance over time through a live Grafana dashboard.
+A tool that audits running Docker infrastructure against a security and 
+compliance checklist, generates reports, and tracks compliance over time 
+through a live Grafana dashboard.
 
 ---
 
@@ -16,26 +18,33 @@ A tool that audits running Docker infrastructure against a security and complian
 ---
 
 ## Project structure
+
 ```bash
 Automated-Compliance-Auditor/
-├── scripts/
-│   └── audit.sh              # Main audit script (15 checks, C01–C15)
+├── .github/
+│   └── workflows/
+│       └── shellcheck.yml        # GitHub Actions CI pipeline
 ├── auditor/
-│   └── Dockerfile            # Container image for the auditor service
+│   ├── Dockerfile                # Container image for the auditor service
+│   └── crontab                   # Cron schedule - runs audit every hour
 ├── grafana/
 │   ├── dashboards/
-│   │   └── compliance.json   # Grafana dashboard export
+│   │   └── compliance.json       # Grafana dashboard export
 │   └── provisioning/
 │       ├── datasources/
-│       │   └── prometheus.yml
+│       │   └── prometheus.yml    # Auto-connects Grafana to Prometheus
 │       └── dashboards/
-│           └── dashboards.yml
+│           └── dashboards.yml    # Auto-loads dashboard JSON on startup
+├── images/                       # Screenshots of different work progress
 ├── metrics/
-│   └── compliance.prom       # Prometheus textfile metrics (runtime generated)
-├── reports/                  # Audit reports (runtime generated, hourly)
-├── prometheus.yml            # Prometheus scrape configuration
-├── docker-compose.yml        # All services: auditor, prometheus, node-exporter, grafana
-└── CHECKLIST.md              # Full compliance rulebook with rationale
+│   └── compliance.prom           # Prometheus textfile metrics (runtime generated)
+├── reports/                      # Audit reports (runtime generated, hourly)
+├── scripts/
+│   └── audit.sh                  # Main audit script (15 checks, C01-C15)
+├── docker-compose.yml            # All services: auditor, prometheus, node-exporter, grafana
+├── prometheus.yml                # Prometheus scrape configuration
+├── CHECKLIST.md                  # Full compliance rulebook with rationale
+└── memo.md                       # AWS security mapping for all 15 checks
 ```
 
 ---
@@ -50,13 +59,15 @@ Automated-Compliance-Auditor/
 | Network | C03, C11 |
 | Host | C06, C12, C15 |
 
-See [CHECKLIST.md](./CHECKLIST.md) for the full list with severity ratings and rationale.
+See [CHECKLIST.md](./CHECKLIST.md) for the full list with severity ratings 
+and rationale.
 
 ---
 
 ## Prometheus metrics
 
-The audit script writes the following metrics to `metrics/compliance.prom` after every run:
+The audit script writes the following metrics to `metrics/compliance.prom` 
+after every run:
 
 | Metric | Description |
 |---|---|
@@ -93,6 +104,90 @@ docker compose up -d
 
 Grafana login: `admin` / `admin`
 
+The Docker Compliance Dashboard loads as the home page automatically.
+If navigating manually, use the search icon and type "Docker Compliance".
+
+---
+
+## How the pipeline works
+
+Every component connects into a single automated pipeline. Once the stack 
+is running, no manual intervention is needed. Here is how data flows from 
+the cron job all the way to the Grafana dashboard.
+
+cron (every hour at :00)
+-> audit.sh runs inside the auditor container
+-> checks all 15 rules against running Docker containers and host
+-> reports/report_<timestamp>.json written
+-> reports/report_<timestamp>.txt written
+-> metrics/compliance.prom updated
+-> node-exporter reads compliance.prom
+-> Prometheus scrapes node-exporter every 15 seconds
+-> Grafana queries Prometheus every 1 minute
+-> Dashboard panels update automatically
+
+### Component responsibilities
+
+| Component | Role | Port |
+|---|---|---|
+| auditor | Runs audit.sh on a cron schedule every hour | - |
+| node-exporter | Reads compliance.prom and exposes metrics | 9100 |
+| Prometheus | Scrapes node-exporter and stores metrics over time | 9090 |
+| Grafana | Queries Prometheus and displays the compliance dashboard | 3000 |
+
+### Cron schedule
+
+The audit is scheduled using a crontab file inside the auditor container:
+
+```bash
+0 * * * * bash /scripts/audit.sh >> /reports/cron.log 2>&1
+```
+This runs the audit at the top of every hour. Output and any errors are
+logged to `reports/cron.log` for debugging.
+
+### Verifying the pipeline
+
+**Check cron is running inside the auditor container:**
+```bash
+docker exec auditor ps aux | grep cron
+```
+
+**Manually trigger the audit without waiting for the hour:**
+```bash
+docker exec auditor bash /scripts/audit.sh
+```
+
+**Check the cron log after a scheduled run:**
+```bash
+cat reports/cron.log
+```
+
+**Confirm Prometheus is receiving metrics:**
+
+Open http://localhost:9090 and search for `compliance_score_percent`.
+A value should be returned immediately.
+
+**Confirm Grafana is displaying data:**
+
+Open http://localhost:3000. The Docker Compliance Dashboard loads as the 
+home page. If navigating manually, use the search icon and type 
+"Docker Compliance". All panels should show live data and time series 
+panels will show trends across hourly audit runs.
+
+### Volumes and data flow
+
+All components share data through mounted volumes defined in 
+`docker-compose.yml`:
+
+| Volume mount | Used by | Purpose |
+|---|---|---|
+| `./scripts:/scripts` | auditor | Audit script source |
+| `./metrics:/metrics` | auditor, node-exporter | compliance.prom shared between writer and reader |
+| `./reports:/reports` | auditor | JSON and text report output |
+| `./prometheus.yml:/etc/prometheus/prometheus.yml` | Prometheus | Scrape configuration |
+| `./grafana/provisioning:/etc/grafana/provisioning` | Grafana | Auto-loads datasource and dashboard |
+| `./grafana/dashboards:/etc/grafana/dashboards` | Grafana | Dashboard JSON |
+
 ---
 
 ## Running the audit manually
@@ -103,7 +198,9 @@ docker exec auditor bash /scripts/audit.sh
 
 With custom configuration:
 ```bash
-docker exec -e DISK_THRESHOLD=75 -e TRUSTED_REGISTRIES="ghcr.io/myorg" auditor bash /scripts/audit.sh
+docker exec -e DISK_THRESHOLD=75 \
+  -e TRUSTED_REGISTRIES="ghcr.io/myorg" \
+  auditor bash /scripts/audit.sh
 ```
 
 ---
@@ -121,13 +218,31 @@ All thresholds are controlled via environment variables:
 
 ---
 
+## CI/CD Pipeline
+
+GitHub Actions runs automatically on every push and pull request.
+The workflow lints `scripts/audit.sh` using `shellcheck` to catch syntax
+errors and bad practices before they reach the main branch.
+
+Workflow file: `.github/workflows/shellcheck.yml`
+
+---
+
+## AWS Security Mapping
+
+See [memo.md](./memo.md) for the full mapping of each local compliance 
+check (C01-C15) to its AWS-native equivalent, including AWS Security Hub, 
+Config Rules, GuardDuty, IAM Access Analyzer, Trusted Advisor, and more.
+
+---
+
 ## Audit outputs
 
 Every hourly run produces three outputs:
 
-1. **Terminal output** — colour-coded PASS/FAIL per rule, printed live
-2. **JSON report** — machine-readable, saved to `reports/report_<timestamp>.json`
-3. **Text report** — human-readable, saved to `reports/report_<timestamp>.txt`
+1. **Terminal output** - colour-coded PASS/FAIL per rule, printed live
+2. **JSON report** - machine-readable, saved to `reports/report_<timestamp>.json`
+3. **Text report** - human-readable, saved to `reports/report_<timestamp>.txt`
 
 ---
 
@@ -135,5 +250,5 @@ Every hourly run produces three outputs:
 
 | Code | Meaning |
 |---|---|
-| `0` | All 15 checks passed — fully compliant |
-| `1` | One or more checks failed — action required |
+| `0` | All 15 checks passed - fully compliant |
+| `1` | One or more checks failed - action required |
