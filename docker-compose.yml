@@ -30,7 +30,6 @@ services:
     environment:
       METRICS_DIR: /metrics
       REPORT_DIR: /reports
-    command: ["/bin/sh", "-c", "while true; do bash /scripts/audit.sh || true; sleep 3600; done"] # updated interval to 1 hour
     restart: unless-stopped
 
   grafana:
